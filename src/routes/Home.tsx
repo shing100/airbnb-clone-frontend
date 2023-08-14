@@ -1,27 +1,26 @@
-import { Box, Grid, HStack, Heading, Image, Text, VStack } from "@chakra-ui/react";
-import { FaStar } from "react-icons/fa";
+import { Box, Button, Grid, HStack, Image, Skeleton, SkeletonText, Text, VStack } from "@chakra-ui/react";
+import { FaRegHeart, FaStar } from "react-icons/fa";
+import Room from "../components/Room";
 
 export default function Home() {
   return (
-    <Grid py={5} px={40} columnGap={4} rowGap={8} templateColumns={"repeat(5, 1fr)"}>
-      <VStack spacing={"-0.5"} alignItems={"flex-start"}>
-        <Box overflow={"hidden"} mb={3} rounded="3xl">
-          <Image h="280" src="https://bit.ly/2k1H1t6" />
-        </Box>
-        <Box>
-          <Grid gap={2} templateColumns={"7fr 1fr"}>
-            <Text display={"block"} as={"b"} noOfLines={1} fontSize={"md"}>Sudong-myeon, Namyangju-si, 경기도, 한국</Text>
-            <HStack>
-              <FaStar size={15}/>
-              <Text>4.95</Text>
-            </HStack>
-            <Text fontSize={"sm"} color={"gray.600"}>경기도, 한국</Text>
-          </Grid>
-        </Box>
-        <Text fontSize={"sm"} color={"gray.600"}>
-          <Text as={"b"}>$72</Text> / night
-        </Text>
-      </VStack>
+    <Grid py={5} px={{
+      base: 5,
+      md: 20,
+      lg: 40,
+    }} columnGap={4} rowGap={8} templateColumns={{
+      base: "repeat(1, 1fr)",
+      md: "repeat(2, 1fr)",
+      lg: "repeat(3, 1fr)",
+      xl: "repeat(4, 1fr)",
+      "2xl": "repeat(5, 1fr)",
+    }}>
+      <Box>
+        <Skeleton borderRadius="2xl" mb={6} height="280px" />
+        <SkeletonText w={"80%"} noOfLines={1} mb={5} />
+        <SkeletonText w={"50%"} noOfLines={2} mb={2} />
+      </Box>
+      <Room />
     </Grid>
   )
 }
