@@ -1,7 +1,8 @@
 import { Grid } from "@chakra-ui/react";
 import Room from "../components/Room";
 import RoomSkeleton from "../components/RoomSkeleton";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { getRooms } from "../api";
 
 interface IPhoto {
   pk: string;
@@ -20,20 +21,24 @@ interface IRoom {
   photos: IPhoto[];
 }
 
+interface IPage {
+  active: number;
+  couunt: number;
+  next_link: string;
+  pages: number;
+  previous_link: string;
+}
+
+interface IRoomProps {
+  content: IRoom[];
+  page: IPage;
+}
+
 export default function Home() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [rooms, setRooms] = useState<IRoom[]>([]);
-  const fetchRooms = async () => {
-    const response = await fetch("http://127.0.0.1:8000/api/v1/rooms/");
-    const { page, content } = await response.json();
-    setRooms(content);
-    setIsLoading(false);
-  };
-  useEffect(() => {
-    fetchRooms();
-  }, []);
+  const { isLoading, data } = useQuery<IRoomProps>(["rooms"], getRooms);
+  
   return (
-    <Grid py={5} px={{
+    <Grid mt={10} py={5} px={{
       base: 5,
       md: 20,
       lg: 40,
@@ -63,8 +68,9 @@ export default function Home() {
           <RoomSkeleton />
         </>
       ) : null}
-      {rooms.map((room: IRoom) => (
+      {data?.content.map((room: IRoom) => (
         <Room
+          key={room.pk}
           imageUrl={room.photos[0].file}
           name={room.name}
           rating={room.rating}
