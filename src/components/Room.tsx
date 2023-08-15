@@ -1,5 +1,6 @@
 import { Box, Button, Grid, HStack, Image, Text, VStack, useColorModeValue } from "@chakra-ui/react";
 import { FaRegHeart, FaStar } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 interface IRoomProps {
   imageUrl: string;
@@ -8,9 +9,11 @@ interface IRoomProps {
   city: string;
   country: string;
   price: number;
+  pk: number;
 }
 
 export default function Room({
+    pk,
     imageUrl,
     name,
     rating,
@@ -20,7 +23,8 @@ export default function Room({
 }: IRoomProps) {
     const gray = useColorModeValue("gray.600", "gray.300");
     return (
-        <VStack spacing={"-0.5"} alignItems={"flex-start"}>
+        <Link to={`/rooms/${pk}`}>
+            <VStack spacing={"-0.5"} alignItems={"flex-start"}>
             <Box position={"relative"} overflow={"hidden"} mb={3} rounded="2xl">
                 <Image h="280" src={imageUrl} />
                 <Button variant={"unstyled"} position={"absolute"} top={0} right={0} color={"white"}>
@@ -43,5 +47,6 @@ export default function Room({
                 <Text as={"b"}>{price}</Text> / night
             </Text>
         </VStack>
+        </Link>
     )
 }

@@ -51,26 +51,15 @@ export default function Home() {
       }}>
       {isLoading ? (
         <>
-          <RoomSkeleton />
-          <RoomSkeleton />
-          <RoomSkeleton />
-          <RoomSkeleton />
-          <RoomSkeleton />
-          <RoomSkeleton />
-          <RoomSkeleton />
-          <RoomSkeleton />
-          <RoomSkeleton />
-          <RoomSkeleton />
-          <RoomSkeleton />
-          <RoomSkeleton />
-          <RoomSkeleton />
-          <RoomSkeleton />
-          <RoomSkeleton />
+          {Array.from({ length: 15 }, (_, index) => (
+            <RoomSkeleton key={index} />
+          ))}
         </>
       ) : null}
       {data?.content.map((room: IRoom) => (
         <Room
           key={room.pk}
+          pk={room.pk}
           imageUrl={room.photos[0].file}
           name={room.name}
           rating={room.rating}
