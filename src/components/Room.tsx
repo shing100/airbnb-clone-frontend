@@ -8,6 +8,7 @@ interface IRoomProps {
   rating: number;
   city: string;
   country: string;
+  address: string;
   price: number;
   pk: number;
 }
@@ -16,6 +17,7 @@ export default function Room({
     pk,
     imageUrl,
     name,
+    address,
     rating,
     city,
     country,
