@@ -9,11 +9,12 @@ import { FaStar } from "react-icons/fa";
 export default function RoomDetail() {
     const { roomPk } = useParams();
     const { isLoading, data } = useQuery<IRoomDetail>([`rooms`, roomPk], getRoom);
-    const { data: reviewsData, isLoading: isReviewsLoading } = useQuery<IReviewData[]>([`rooms`, roomPk, `reviews`], getRoomReviews);
-    const content: IReview[] = reviewsData?.content;
+    const { data: reviewsData, isLoading: isReviewsLoading } = useQuery<IReviewData>([`rooms`, roomPk, `reviews`], getRoomReviews);
+    const content: IReview[] = reviewsData?.content ?? [];
+
     return (
         <Box pb={20} mt={10} px={{ base: 10, md: 20, lg: 40,}}>
-            <Skeleton height={"43px"} width="25%" isLoaded={!isLoading}>
+            <Skeleton height={"43px"} width="50%" isLoaded={!isLoading}>
                 <Heading>{data?.name}</Heading>
             </Skeleton>
             <Grid mt={8} rounded="xl" overflow={"hidden"} gap={2} height="60vh" templateRows={"1fr 1fr"} templateColumns={"repeat(4, 1fr)"}>
