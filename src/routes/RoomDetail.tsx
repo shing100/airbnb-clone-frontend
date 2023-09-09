@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import { getRoom, getRoomReviews } from "../api";
-import { IRoomDetail, IReview } from "../types";
+import { IRoomDetail, IReview, IReviewData } from "../types";
 import { Box, Container, Grid, GridItem, Heading, HStack, Image, Skeleton, Text, VStack, Avatar } from "@chakra-ui/react";
 import { FaStar } from "react-icons/fa";
 
@@ -9,7 +9,8 @@ import { FaStar } from "react-icons/fa";
 export default function RoomDetail() {
     const { roomPk } = useParams();
     const { isLoading, data } = useQuery<IRoomDetail>([`rooms`, roomPk], getRoom);
-    const { data: reviewsData, isLoading: isReviewsLoading } = useQuery<IReview[]>([`rooms`, roomPk, `reviews`], getRoomReviews);
+    const { data: reviewsData, isLoading: isReviewsLoading } = useQuery<IReviewData[]>([`rooms`, roomPk, `reviews`], getRoomReviews);
+    const content: IReview[] = reviewsData?.content;
     return (
         <Box pb={20} mt={10} px={{ base: 10, md: 20, lg: 40,}}>
             <Skeleton height={"43px"} width="25%" isLoaded={!isLoading}>
@@ -56,13 +57,13 @@ export default function RoomDetail() {
                     <FaStar /> <Text>{data?.rating}</Text>
                     <Text>∙</Text>
                     <Text>
-                    {reviewsData?.length} review{reviewsData?.length === 1 ? "" : "s"}
+                    {content?.length} review{content?.length === 1 ? "" : "s"}
                     </Text>
                 </HStack>
                 </Heading>
                 <Container mt={16} maxW="container.lg" marginX="none">
                     <Grid gap={10} templateColumns={"1fr 1fr"}>
-                        {reviewsData?.map((review, index) => (
+                        {content?.map((review, index) => (
                         <VStack alignItems={"flex-start"} key={index}>
                             <HStack>
                             <Avatar

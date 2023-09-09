@@ -59,8 +59,14 @@ export interface IRoomDetail extends IRoomList {
   amenities: IAmenity[];
 }
 
+export interface IReviewData {
+  page: IPage;
+  content: IReview[]
+}
+
 export interface IReview {
   payload: string;
   rating: number;
   user: IRoomOwner;
+  booking: Object;
 }
