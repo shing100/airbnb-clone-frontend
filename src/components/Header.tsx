@@ -1,56 +1,99 @@
 import { FaAirbnb, FaMoon, FaSun } from "react-icons/fa";
-import LoginModal from "./LoginModal";
-import { Avatar, Box, Button, HStack, IconButton, LightMode, Stack, useColorMode, useColorModeValue, useDisclosure, Menu, MenuButton, MenuItem, MenuList, useToast } from "@chakra-ui/react";
+import {
+    Avatar,
+    Box,
+    Button,
+    HStack,
+    IconButton,
+    LightMode,
+    Menu,
+    MenuButton,
+    MenuItem,
+    MenuList,
+    Stack,
+    ToastId,
+    useColorMode,
+    useColorModeValue,
+    useDisclosure,
+    useToast,
+} from "@chakra-ui/react";
 import { Link } from "react-router-dom";
+import LoginModal from "./LoginModal";
 import SignUpModal from "./SignUpModal";
 import useUser from "../lib/useUser";
 import { logOut } from "../api";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRef } from "react";
 
 export default function Header() {
     const { userLoading, isLoggedIn, user } = useUser();
-    const { isOpen: isLoginOpen, onClose: onLoginClose, onOpen: onLoginOpen } = useDisclosure();
-    const { isOpen: isSignUpOpen, onClose: onSignUpClose, onOpen: onSignUpOpen } = useDisclosure();
+    const {
+        isOpen: isLoginOpen,
+        onClose: onLoginClose,
+        onOpen: onLoginOpen,
+    } = useDisclosure();
+    const {
+        isOpen: isSignUpOpen,
+        onClose: onSignUpClose,
+        onOpen: onSignUpOpen,
+    } = useDisclosure();
     const { toggleColorMode } = useColorMode();
     const logoColor = useColorModeValue("red.500", "red.200");
     const Icon = useColorModeValue(FaMoon, FaSun);
     const toast = useToast();
     const queryClient = useQueryClient();
-
+    const toastId = useRef<ToastId>();
+    const mutation = useMutation(logOut, {
+        onMutate: () => {
+            toastId.current = toast({
+                title: "Login out...",
+                description: "Sad to see you go...",
+                status: "loading",
+                position: "bottom-right",
+            });
+        },
+        onSuccess: () => {
+            if (toastId.current) {
+                queryClient.refetchQueries(["me"]);
+                toast.update(toastId.current, {
+                    status: "success",
+                    title: "Done!",
+                    description: "See you later!",
+                });
+            }
+        },
+    });
     const onLogOut = async () => {
-        const toastId = toast({
-            title: "Login out...",
-            description: "Sad to see you go...",
-            status: "loading",
-            position: "bottom-right",
-        });
-        await logOut();
-        queryClient.refetchQueries(["me"]);
-        toast.update(toastId, {
-            status: "success",
-            title: "Done!",
-            description: "See you later!",
-        });
+        mutation.mutate();
     };
     return (
-        <Stack justifyContent={"space-between"} alignItems={"center"} spacing={{
-            sm: 4,
-            md: 0
-        }} py={5} px={{
-            sm: 5,
-            md: 20,
-            lg: 40
-        }} direction={{
-            sm: "column",
-            md: "row"
-        }} borderBottomWidth={1}>
+        <Stack
+            justifyContent={"space-between"}
+            alignItems="center"
+            py={5}
+            px={40}
+            direction={{
+                sm: "column",
+                md: "row",
+            }}
+            spacing={{
+                sm: 4,
+                md: 0,
+            }}
+            borderBottomWidth={1}
+        >
             <Box color={logoColor}>
-                <Link to="/">
-                    <FaAirbnb size={"40"}/>
+                <Link to={"/"}>
+                    <FaAirbnb size={"48"} />
                 </Link>
             </Box>
             <HStack spacing={2}>
-            <IconButton onClick={toggleColorMode} variant={"ghost"} aria-label="Toggle dark mode" icon={<Icon />} />
+                <IconButton
+                    onClick={toggleColorMode}
+                    variant={"ghost"}
+                    aria-label="Toggle dark mode"
+                    icon={<Icon />}
+                />
                 {!userLoading ? (
                     !isLoggedIn ? (
                         <>
@@ -76,5 +119,5 @@ export default function Header() {
             <LoginModal isOpen={isLoginOpen} onClose={onLoginClose} />
             <SignUpModal isOpen={isSignUpOpen} onClose={onSignUpClose} />
         </Stack>
-    )
+    );
 }
