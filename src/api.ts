@@ -31,3 +31,16 @@ export const logOut = () =>   instance
       },
     })
     .then((response) => response.data);
+
+export const githubLogIn = (code: string) =>
+    instance
+        .post(
+            `/users/github`,
+            { code },
+            {
+                headers: {
+                    "X-CSRFToken": Cookie.get("csrftoken") || "",
+                },
+            }
+        )
+        .then((response) => response.status);
