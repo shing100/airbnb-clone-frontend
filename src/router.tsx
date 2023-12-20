@@ -4,6 +4,7 @@ import Home from "./routes/Home";
 import NotFound from "./routes/NotFound";
 import RoomDetail from "./routes/RoomDetail";
 import GithubConfirm from "./routes/GithubConfirm";
+import KakaoConfirm from "./routes/KakaoConfirm";
 
 const router = createBrowserRouter([
   {
@@ -24,8 +25,12 @@ const router = createBrowserRouter([
         children: [
           {
             path: "github",
-            element: <GithubConfirm/>,
-          }
+            element: <GithubConfirm />,
+          },
+          {
+              path: "kakao",
+              element: <KakaoConfirm />,
+          },
         ]
       }
     ],
