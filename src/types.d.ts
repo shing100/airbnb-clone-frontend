@@ -36,6 +36,7 @@ export interface IRoomOwner {
 }
 
 export interface IAmenity {
+  pk: number;
   name: string;
   description: string;
 }
@@ -82,4 +83,10 @@ export interface IUser {
   gender: string;
   language: string;
   currency: string;
+}
+
+export interface ICategory {
+  pk: number;
+  name: string;
+  kind: string;
 }
