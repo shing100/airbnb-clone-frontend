@@ -33,6 +33,7 @@ export default function Home() {
         <Room
           key={room.pk}
           pk={room.pk}
+          isOwner={room.is_owner}
           address={room.address}
           imageUrl={room.photos[0]?.file}
           name={room.name}

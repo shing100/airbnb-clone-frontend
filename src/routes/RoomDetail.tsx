@@ -1,213 +1,125 @@
 import {
+    Avatar,
     Box,
-    Button,
-    Checkbox,
     Container,
-    FormControl,
-    FormHelperText,
-    FormLabel,
     Grid,
+    GridItem,
     Heading,
-    Input,
-    InputGroup,
-    InputLeftAddon,
-    Select,
+    HStack,
+    Image,
+    Skeleton,
     Text,
-    Textarea,
-    useToast,
     VStack,
 } from "@chakra-ui/react";
-import { useForm } from "react-hook-form";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { FaBed, FaMoneyBill, FaToilet, FaUsb } from "react-icons/fa";
-import {
-    getAmenities,
-    getCategories,
-    IUploadRoomVariables,
-    uploadRoom,
-} from "../api";
-import useHostOnlyPage from "../components/HostOnlyPage";
-import ProtectedPage from "../components/ProtectedPage";
-import { IAmenity, ICategory, IRoomDetail } from "../types";
-import { useNavigate } from "react-router-dom";
+import { FaStar } from "react-icons/fa";
+import { useQuery } from "@tanstack/react-query";
+import { useParams } from "react-router-dom";
+import { getRoom, getRoomReviews } from "../api";
+import { IReview, IRoomDetail, IReviewData } from "../types";
 
-export default function UploadRoom() {
-    const { register, handleSubmit } = useForm<IUploadRoomVariables>();
-    const toast = useToast();
-    const navigate = useNavigate();
-    const mutation = useMutation(uploadRoom, {
-        onSuccess: (data: IRoomDetail) => {
-            toast({
-                status: "success",
-                title: "Room created",
-                position: "bottom-right",
-            });
-            navigate(`/rooms/${data.id}`);
-        },
-    });
-    const { data: amenities } = useQuery<IAmenity[]>(["amenities"], getAmenities);
-    const { data: categories } = useQuery<ICategory[]>(
-        ["categories"],
-        getCategories
-    );
-    useHostOnlyPage();
-    const onSubmit = (data: IUploadRoomVariables) => {
-        mutation.mutate(data);
-    };
+export default function RoomDetail() {
+    const { roomPk } = useParams();
+    const { isLoading, data } = useQuery<IRoomDetail>([`rooms`, roomPk], getRoom);
+    const { data: reviewsData, isLoading: isReviewsLoading } = useQuery<
+        IReviewData
+    >([`rooms`, roomPk, `reviews`], getRoomReviews);
+    console.log(reviewsData)
     return (
-        <ProtectedPage>
-            <Box
-                pb={40}
-                mt={10}
-                px={{
-                    base: 10,
-                    lg: 40,
-                }}
+        <Box
+            pb={40}
+            mt={10}
+            px={{
+                base: 10,
+                lg: 40,
+            }}
+        >
+            <Skeleton height={"43px"} width="55%" isLoaded={!isLoading}>
+                <Heading>{data?.name}</Heading>
+            </Skeleton>
+            <Grid
+                mt={8}
+                rounded="xl"
+                overflow={"hidden"}
+                gap={2}
+                height="60vh"
+                templateRows={"1fr 1fr"}
+                templateColumns={"repeat(4, 1fr)"}
             >
-                <Container>
-                    <Heading textAlign={"center"}>Upload Room</Heading>
-                    <VStack
-                        spacing={10}
-                        as="form"
-                        onSubmit={handleSubmit(onSubmit)}
-                        mt={5}
+                {[0, 1, 2, 3, 4].map((index) => (
+                    <GridItem
+                        colSpan={index === 0 ? 2 : 1}
+                        rowSpan={index === 0 ? 2 : 1}
+                        overflow={"hidden"}
+                        key={index}
                     >
-                        <FormControl>
-                            <FormLabel>Name</FormLabel>
-                            <Input
-                                {...register("name", { required: true })}
-                                required
-                                type="text"
-                            />
-                            <FormHelperText>Write the name of your room.</FormHelperText>
-                        </FormControl>
-                        <FormControl>
-                            <FormLabel>Country</FormLabel>
-                            <Input
-                                {...register("country", { required: true })}
-                                required
-                                type="text"
-                            />
-                        </FormControl>
-                        <FormControl>
-                            <FormLabel>City</FormLabel>
-                            <Input
-                                {...register("city", { required: true })}
-                                required
-                                type="text"
-                            />
-                        </FormControl>
-                        <FormControl>
-                            <FormLabel>Address</FormLabel>
-                            <Input
-                                {...register("address", { required: true })}
-                                required
-                                type="text"
-                            />
-                        </FormControl>
-                        <FormControl>
-                            <FormLabel>Price</FormLabel>
-                            <InputGroup>
-                                <InputLeftAddon children={<FaMoneyBill />} />
-                                <Input
-                                    {...register("price", { required: true })}
-                                    type="number"
-                                    min={0}
+                        <Skeleton isLoaded={!isLoading} h="100%" w="100%">
+                            {data?.photos && data.photos.length > 4 ? (
+                                <Image
+                                    objectFit={"cover"}
+                                    w="100%"
+                                    h="100%"
+                                    src={data?.photos[index].file}
                                 />
-                            </InputGroup>
-                        </FormControl>
-                        <FormControl>
-                            <FormLabel>Rooms</FormLabel>
-                            <InputGroup>
-                                <InputLeftAddon children={<FaBed />} />
-                                <Input
-                                    {...register("rooms", { required: true })}
-                                    type="number"
-                                    min={0}
-                                />
-                            </InputGroup>
-                        </FormControl>
-                        <FormControl>
-                            <FormLabel>Toilets</FormLabel>
-                            <InputGroup>
-                                <InputLeftAddon children={<FaToilet />} />
-                                <Input
-                                    {...register("toilets", { required: true })}
-                                    type="number"
-                                    min={0}
-                                />
-                            </InputGroup>
-                        </FormControl>
-                        <FormControl>
-                            <FormLabel>Description</FormLabel>
-                            <Textarea {...register("description", { required: true })} />
-                        </FormControl>
-                        <FormControl>
-                            <Checkbox {...register("pet_friendly", { required: true })}>
-                                Pet friendly?
-                            </Checkbox>
-                        </FormControl>
-                        <FormControl>
-                            <FormLabel>Kind of room</FormLabel>
-                            <Select
-                                {...register("kind", { required: true })}
-                                placeholder="Choose a kind"
-                            >
-                                <option value="entire_place">Entire Place</option>
-                                <option value="private_room">Private Room</option>
-                                <option value="shared_room">Shared Room</option>
-                            </Select>
-                            <FormHelperText>
-                                What kind of room are you renting?
-                            </FormHelperText>
-                        </FormControl>
-                        <FormControl>
-                            <FormLabel>Category</FormLabel>
-                            <Select
-                                {...register("category", { required: true })}
-                                placeholder="Choose a category"
-                            >
-                                {categories?.map((category) => (
-                                    <option key={category.pk} value={category.pk}>
-                                        {category.name}
-                                    </option>
-                                ))}
-                            </Select>
-                            <FormHelperText>
-                                What category describes your room?
-                            </FormHelperText>
-                        </FormControl>
-                        <FormControl>
-                            <FormLabel>Amenities</FormLabel>
-                            <Grid templateColumns={"1fr 1fr"} gap={5}>
-                                {amenities?.map((amenity) => (
-                                    <Box key={amenity.pk}>
-                                        <Checkbox
-                                            value={amenity.pk}
-                                            {...register("amenities", { required: true })}
-                                        >
-                                            {amenity.name}
-                                        </Checkbox>
-                                        <FormHelperText>{amenity.description}</FormHelperText>
-                                    </Box>
-                                ))}
-                            </Grid>
-                        </FormControl>
-                        {mutation.isError ? (
-                            <Text color="red.500">Something went wrong</Text>
-                        ) : null}
-                        <Button
-                            type="submit"
-                            isLoading={mutation.isLoading}
-                            colorScheme={"red"}
-                            size="lg"
-                            w="100%"
-                        >
-                            Upload Room
-                        </Button>
-                    </VStack>
+                            ) : null}
+                        </Skeleton>
+                    </GridItem>
+                ))}
+            </Grid>
+            <HStack width={"40%"} justifyContent={"space-between"} mt={10}>
+                <VStack alignItems={"flex-start"}>
+                    <Skeleton isLoaded={!isLoading} height={"30px"}>
+                        <Heading fontSize={"2xl"}>
+                            House hosted by {data?.owner.name}
+                        </Heading>
+                    </Skeleton>
+                    <Skeleton isLoaded={!isLoading} height={"30px"}>
+                        <HStack justifyContent={"flex-start"} w="100%">
+                            <Text>
+                                {data?.toilets} toliet{data?.toilets === 1 ? "" : "s"}
+                            </Text>
+                            <Text>∙</Text>
+                            <Text>
+                                {data?.rooms} room{data?.rooms === 1 ? "" : "s"}
+                            </Text>
+                        </HStack>
+                    </Skeleton>
+                </VStack>
+                <Avatar name={data?.owner.name} size={"xl"} src={data?.owner.avatar} />
+            </HStack>
+            <Box mt={10}>
+                <Heading mb={5} fontSize={"2xl"}>
+                    <HStack>
+                        <FaStar /> <Text>{data?.rating}</Text>
+                        <Text>∙</Text>
+                        <Text>
+                            {reviewsData?.content.length} review{reviewsData?.content.length === 1 ? "" : "s"}
+                        </Text>
+                    </HStack>
+                </Heading>
+                <Container mt={16} maxW="container.lg" marginX="none">
+                    <Grid gap={10} templateColumns={"1fr 1fr"}>
+                        {reviewsData?.content.map((review, index) => (
+                            <VStack alignItems={"flex-start"} key={index}>
+                                <HStack>
+                                    <Avatar
+                                        name={review.user.name}
+                                        src={review.user.avatar}
+                                        size="md"
+                                    />
+                                    <VStack spacing={0} alignItems={"flex-start"}>
+                                        <Heading fontSize={"md"}>{review.user.name}</Heading>
+                                        <HStack spacing={1}>
+                                            <FaStar size="12px" />
+                                            <Text>{review.rating}</Text>
+                                        </HStack>
+                                    </VStack>
+                                </HStack>
+                                <Text>{review.payload}</Text>
+                            </VStack>
+                        ))}
+                    </Grid>
                 </Container>
             </Box>
-        </ProtectedPage>
+        </Box>
     );
 }
