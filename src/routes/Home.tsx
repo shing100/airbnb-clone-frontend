@@ -34,7 +34,7 @@ export default function Home() {
           key={room.pk}
           pk={room.pk}
           address={room.address}
-          imageUrl={room.photos[0].file}
+          imageUrl={room.photos[0]?.file}
           name={room.name}
           rating={room.rating}
           city={room.city}

@@ -27,8 +27,18 @@ export default function Room({
     return (
         <Link to={`/rooms/${pk}`}>
             <VStack spacing={"-0.5"} alignItems={"flex-start"}>
-            <Box position={"relative"} overflow={"hidden"} mb={3} rounded="2xl">
-                <Image h="280" src={imageUrl} />
+            <Box
+                w="100%"
+                position="relative"
+                overflow={"hidden"}
+                mb={3}
+                rounded="2xl"
+            >
+                {imageUrl ? (
+                    <Image minH="280" src={imageUrl} />
+                ) : (
+                    <Box minH="280px" h="100%" w="100%" p={10} bg="green.400" />
+                )}
                 <Button variant={"unstyled"} position={"absolute"} top={0} right={0} color={"white"}>
                     <FaRegHeart size="20px" />
                 </Button>
